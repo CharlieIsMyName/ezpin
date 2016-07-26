@@ -1,0 +1,17 @@
+{
+  "name": "ezbar",
+  "version": "0.0.0",
+  "description": "A bar finder that helps the user to find nearby bars using yelp api",
+  "main": "server.js",
+  "repository": "",
+  "author": "Chenyu Wang <charliewangchenyu@gmail.com>",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "client-sessions": "^0.7.0",
+    "express": "~3.2.4",
+    "jade": "^1.11.0",
+    "mongodb": "^2.2.2",
+    "monk": "^3.0.7",
+    "yelp": "^1.0.1"
+  }
+}

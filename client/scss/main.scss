@@ -1,0 +1,216 @@
+$blue: #6599ff;
+$orange: #FF9900;
+$lightgrey: #E0E0E0;
+$grey: #7E8F7C;
+$red: #ff6347;
+
+$panelmargin: 70px;
+
+.headerBar{
+  background-color : $blue;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.title:link, .title:visited, .title:hover, .title:active{
+    color: white;
+    font-weight: bold;
+    font-size: 40px;
+    text-decoration: none;
+}
+
+
+
+.signin-btn{
+  background-color:white;
+  text-align:center;
+  font-size: 20px;
+  margin-top: 7px;
+  padding-top: 5px;
+  padding-bottom: 0px;
+  border-radius: 15px;
+  background-color: $orange;
+  color: white;
+  font-weight: bold;
+}
+
+
+.signin-btn:hover{
+  color: white;
+  
+}
+
+.small-offset{
+  margin-left: 2%;
+}
+
+.signup-panel{
+  margin-top: $panelmargin;
+  margin-bottom: $panelmargin;
+  margin-left: 35%;
+  margin-right: 35%;
+  width: 30%;
+  background-color: $lightgrey;
+  border-radius: 20px;
+  padding: 10px;
+}
+
+.signup-prompt{
+  text-align: center;
+  font-size: 25px;
+  font-weight: bold;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.form{
+  padding: 10px 15px 10px 15px;
+}
+
+.form-prompt{
+  font-size: 15px;
+  font-weight: bold;
+}
+.long-input{
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.submit-btn{
+  margin-top: 10px;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-bottom: 10px;
+  width: 80%;
+  height: 40px;
+  font-weight: bold;
+  font-size: 19px;
+  color: white;
+  background-color: $grey;
+  border-radius: 10px;
+}
+
+.share-btn{
+  margin-top: 10px;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-bottom: 10px;
+  width: 80%;
+  height: 40px;
+  font-weight: bold;
+  font-size: 19px;
+  color: white;
+  background-color: $blue;
+  border-radius: 10px;
+}
+
+.delete-btn{
+  margin-top: 10px;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-bottom: 10px;
+  width: 80%;
+  height: 40px;
+  font-weight: bold;
+  font-size: 19px;
+  color: white;
+  background-color: $red;
+  border-radius: 10px;
+}
+
+.error-prompt{
+  color: red;
+  font-size: 15px;
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+.dropdown{
+  position: absolute;
+  width: 11vw;
+  margin-left:73%;
+  background: #eee;
+  box-shadow: 0 0 5px #999999;
+  display:none;
+}
+
+.dropdownElement{
+  margin: 10px 10px 10px 10px;
+  padding-top:7px;
+  padding-bottom: 3px;
+  text-align: center;
+  font-weight:bold;
+  font-size: 20px;
+
+  
+}
+
+.dropdownElement:hover{
+  margin: 10px 10px 10px 10px;
+  padding-top:7px;
+  padding-bottom: 3px;
+  text-align: center;
+  font-weight:bold;
+  background-color: $lightgrey;
+}
+
+.dropdownLink:link, .dropdownLink:visited, .dropdownLink:hover, .dropdownLink:active{
+    text-decoration: none;
+    color: #333;
+}
+
+.addbtn,.addbtn:hover{
+  background-color: $blue;
+  margin-left: 30%;
+  margin-right: 30%;
+  width: 40%;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  padding-top:5px;
+  padding-bottom:5px;
+}
+
+.pollListElement{
+  margin: 10px 30% 10px 30%;
+  padding-top:10px;
+  padding-bottom: 10px;
+  text-align: center;
+  font-weight:bold;
+  font-size: 15px;
+  background: #eee;
+  box-shadow: 0 0 5px #999999;
+}
+
+.pollListLink:link, .pollListLink:visited, .pollListLink:hover, .pollListLink:active{
+    text-decoration: none;
+    color: #333;
+}
+
+.choosePanel{
+  margin-left: 5%;
+  width: 25%;
+  background-color: $lightgrey;
+  float: left;
+  margin-top: 15vw;
+}
+
+.pollTitle{
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+  margin: 20px 20px 20px 20px;
+  
+}
+
+.options{
+  margin: 10px 25% 10px 25%;
+  height: 30px;
+  width: 50%;
+}
+.resultPanel{
+  margin-left: 15%;
+  width: 35vw;
+  height: 35vw;
+  float:left;
+  margin-top: 50px;
+}

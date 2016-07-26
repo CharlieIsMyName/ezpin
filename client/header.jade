@@ -1,0 +1,15 @@
+div(class="row headerBar")
+ div(class="col-md-2 col-md-offset-5 text-center")
+   a(href="/" class="title") EZ Poll
+ a(href="#{user?'#':'/signin'}" onclick="#{user?'toggleList()':''}" class="subtitle")  
+    div(class="btn signin-btn col-md-offset-2 col-md-1 text-center")
+        p #{user?user.username:"Sign In"}
+ a(href="/signup" class="subtitle")  
+    div(class="btn signin-btn small-offset col-md-1 text-center")
+        p Sign Up
+div
+    div(id="userList" class="dropdown")
+        a(href="/signout" class="dropdownLink")
+            div(class="dropdownElement")
+                p Log Out
+        

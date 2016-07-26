@@ -1,0 +1,29 @@
+doctype
+
+html
+  head
+    title Sign In For EzPoll
+    include lib.jade
+    
+  body
+      div(class="container-fluid")
+       include header.jade
+       div(class="row")
+         div(class="signup-panel")
+           p(class="signup-prompt") Sign In
+           div(class="form")
+             form(action="/signin" method="post")
+               p(class="form-prompt") User Name
+               input(type="text" name="username" class="long-input")
+               p(class="form-prompt") Password
+               input(type="password" name="password" class="long-input")
+               input(type="submit" value="Sign In" class="submit-btn")
+               
+               -function errToElement(err){
+               -    if(err=="invalid"){return "<div class='error-prompt'>Please make sure your username and password are correct!</div>"}
+               -    return "";
+               -}
+               
+               p !{errToElement(err)}
+script(src="js/init.js")
+               
