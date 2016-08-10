@@ -26,7 +26,7 @@ $panelmargin: 70px;
   font-size: 20px;
   margin-top: 7px;
   padding-top: 5px;
-  padding-bottom: 0px;
+  padding-bottom: 5px;
   border-radius: 15px;
   background-color: $orange;
   color: white;
@@ -127,10 +127,11 @@ $panelmargin: 70px;
 .dropdown{
   position: absolute;
   width: 11vw;
-  margin-left:73%;
+  margin-left:81%;
   background: #eee;
   box-shadow: 0 0 5px #999999;
   display:none;
+  z-index: 100;
 }
 
 .dropdownElement{
@@ -213,4 +214,39 @@ $panelmargin: 70px;
   height: 35vw;
   float:left;
   margin-top: 50px;
+}
+
+.pin{
+  width: 300px;
+  background-color: $lightgrey;
+  margin: 10px;
+  float: left;
+  border-radius: 5%;
+}
+
+.pin-pic{
+  width: 80%;
+  margin: 10% 10% 5% 10%;
+}
+
+.pin-title{
+  width: 80%;
+  margin: 2% 10% 2% 10%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.pin-icon{
+  margin: 5% 10% 5% 10%;
+  width: 15%;
+  float: left;
+}
+
+.pin-remove{
+  float:right;
+  margin: 5% 10% 5% 10%;
+  width: 45px;
+  height: 45px;
+  vertical-align: middle;
 }

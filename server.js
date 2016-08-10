@@ -1,138 +1,263 @@
 var express = require('express');
 var app=express();
-var port=process.env.PORT||8080;
+var port=8080;
 var fs=require("fs");
 var bodyParser = require('body-parser');
 var url=require("url");
 var querystring=require("querystring");
-var session=require("client-sessions");
+var session=require("express-session");
+var http=require('http');
+var https=require('https');
+var imageType=require('image-type');
 
+const key=require("./key.json");        //key information such as twitter OAuth key and database url and cookie secret
+
+//---------------------------------mongodb setup------------------------------------
 var mongo=require("mongodb");
 var monk=require("monk");
-var dburl=process.argv[3];  //dburl will be the second argument
-
+var dburl=key.dburl;  //dburl will be the second argument
 const db=monk(dburl);
-const loginCollectionName="ezbar-login"
+const collectionName="ezpin"
+
+//----------------------passport authentication setup------------------------
+var passport=require('passport');
+var TwitterStrategy = require('passport-twitter').Strategy;
+app.use(session({
+  secret: key.sessionSecret,
+  resave: true,
+  saveUninitialized: false
+}));
+app.use(passport.initialize())
+app.use(passport.session())
+
+passport.use('twitter',new TwitterStrategy(key.twitterKey,function(token, tokenSecret, profile, done){
+  process.nextTick(function(){
+    db.collection(collectionName).find({id:profile.id},function(err,data){
+      if(err){
+        done(err,null);
+        throw err;
+      }
+      if(data.length!=0){   //if user exist, synchronize user profile and then continue with that profile.
+        data[0].username=profile.username;
+        data[0].iconURL=profile["_json"].profile_image_url;
+        db.collection(collectionName).update({id:profile.id},data[0]);
+        done(null,data[0]);
+      }
+      else{     //else create a new account
+        var newProf={};
+        newProf.id=profile.id;
+        newProf.username=profile.username;
+        newProf.iconURL=profile["_json"].profile_image_url;
+        newProf.pin=[];
+        
+        db.collection(collectionName).insert(newProf,function(err){
+          if(err){
+            done(err,null);
+            throw err;
+          }
+          
+          done(null,newProf);
+        });
+      }
+    });
+    
+  });
+  
+}));
+
+passport.serializeUser(function (user, done) {
+	done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+    db.collection(collectionName).find({id:id},function(err,user){
+      if(err){
+        done(err,null);
+        throw err;
+      }
+      done(null,user[0]);
+    });
+});
+
+//------------------------------end of setting up passport authentication-----------------------
+
+
+//---------------------------------------user functions-----------------------------------------
+function ifImgValid(url,succ,fail){          //check if a url is a valid image. If yes, call succ, else call fail
+    if(url.substring(0,7)=="http://"){
+        http.get(url, function (res) {
+            res.once('data', function (chunk) {
+                res.destroy();
+                if(imageType(chunk))succ();
+                else fail();
+            });
+        }).on('error',function(){
+          fail();
+        })
+    }
+    else if(url.substring(0,8)=="https://"){
+        https.get(url, function (res) {
+            res.once('data', function (chunk) {
+                res.destroy();
+                if(imageType(chunk))succ();
+                else fail();
+            });
+        }).on('error',function(){
+          fail();
+        })
+    }
+    else fail();
+}
 
 function isValid(str) { return /^\w+$/.test(str); };      //the function that checks if a string is purely composed of number and alphabets
 
+//-------------------------------routing--------------------------------------------------------
 app.set("views",__dirname+"/client");
 app.set("view engine","jade");
 
 app.use(express.static(__dirname+'/client'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(session({
-  cookieName: "session",
-  secret: process.argv[2],            //session secret will be the first argument
-  duration: 60*60*1000,               //one hour in length
-  activeDuration: 60*60*1000
-}));
-
-app.use(function(req,res,next){
-  req.db=db;
-  next();
-})
 
 app.get('/',function(req,res){
-  res.render("index",{
-    user: req.session.user
-  });
-});
-
-app.get('/signup',function(req,res){
-  res.render("signup",
-  {
-      err: querystring.parse(url.parse(req.url).query).err,
-      user: req.session.user
-  });
-});
-
-app.post('/signup',function(req,res){
-  console.log(req.body);
-  var loginCollection=req.db.collection(loginCollectionName);
-  
-  //if the signup input is invalid 
-  if(!req.body.username||!req.body.password||!req.body["re-password"]){
-    res.redirect("/signup?err=empty");
-    return;
-  }
-  if(req.body.password!=req.body["re-password"]){
-    res.redirect("/signup?err=notMatch");
-    return;
-  }
-  if(!isValid(req.body.username)||!isValid(req.body.password)||!isValid(req.body["re-password"])){
-    res.redirect("/signup?err=invalid");
-    return;
-  }
-  
-  loginCollection.count({"username": req.body.username},function(err,count){
-    if(err){
-      throw err;
-    }
-    if(count!=0){
-      res.redirect("/signup?err=exist");
-      return;
+  //we will build the list of all pins
+  db.collection(collectionName).find({},function(err,data){
+    if(err) throw err;
+    var list=[];
+    for(var i=0;i<data.length;i++){
+      for(var j=0;j<data[i].pin.length;j++){
+        list.push({
+          id: data[i].id,
+          username: data[i].username,
+          iconURL: data[i].iconURL,
+          title: data[i].pin[j].title,
+          url: data[i].pin[j].url
+        });
+      }
     }
     
-    
-    loginCollection.insert({
-      username: req.body.username,
-      password: req.body.password             
+    res.render("index",{
+      user: req.user,
+      pins: list
     });
-    
-    req.session.user={
-      username: req.body.username
-    }
-    console.log("yes!");
-    res.redirect('/');
-    return;
-  })
-  
-  
-});
-
-app.get('/signin',function(req,res){
-  res.render("signin",
-  {
-      err: querystring.parse(url.parse(req.url).query).err,
-      user: req.session.user
   });
 });
 
-app.post('/signin',function(req,res){
-  console.log(req.body);
-  var loginCollection=req.db.collection(loginCollectionName);
-  
-  if(!req.body.username||!req.body.password){
-    res.redirect("/signin?err=invalid");
-    return;
-  }
-  
-  loginCollection.find({username: req.body.username, password: req.body.password},function(err,data){
-    if(err){
-      throw err;
-    }
-    
-    if(data.length==0){          //if anything is wrong, login failed
-      res.redirect("/signin?err=invalid");
-      return;
-    }
-    
-    req.session.user={          //else, login to session and go to the main page
-      username: req.body.username
-    }
-    
-    res.redirect('/');
-    return;
-  });
-  
-});
+app.get('/signin',passport.authenticate('twitter'));
+
+app.get('/signin/callback',passport.authenticate('twitter', {
+  successRedirect : '/',
+  failureRedirect : '/signin'
+}));
 
 app.get('/signout',function(req,res){
-  req.session.reset();
+  req.logout();
   res.redirect('/');
-  return;
+})
+
+app.get('/newpin',function(req,res){
+  if(!req.user){
+    res.redirect('/signin');
+    return;
+  }
+  res.render("newpin",{
+    user: req.user,
+    err: querystring.parse(url.parse(req.url).query).err
+  });
+});
+
+
+app.post('/newpin',function(req,res){
+  if(!req.user){
+    res.redirect('/signin');
+    return;
+  }
+  var title=req.body.title;
+  var url=req.body.url;
+  
+  ifImgValid(url,
+    function(){
+      db.collection(collectionName).find({id:req.user.id},function(err,data){
+        if(err) throw err;
+        
+        if(data.length==0){       //impossible! if u have an user profile in cookie then u probably already have a profile in db
+          res.redirect('/signin');
+          return;
+        }
+        
+        var profile=data[0];
+        profile.pin.push({
+          title: title,
+          url: url
+        });
+        
+        db.collection(collectionName).update({id:profile.id},profile);
+        res.redirect('/');
+        return;
+      });
+    },
+    function(){
+      res.redirect('/newpin?err=invalid');
+      return;
+    });
+});
+
+app.get('/pin',function(req,res){
+  var id=querystring.parse(url.parse(req.url).query).id;
+  db.collection(collectionName).find({id:id},function(err,data){
+    if(err)throw err;
+    
+    if(data.length==0){   //if the user does not exist which should not happen at all!
+      res.redirect('/');
+      return;
+    }
+    
+    var profile=data[0];
+    var list=[];
+    for(var i=0;i<profile.pin.length;i++){      //for the sake of reusing the index.jade code as pin.jade
+      list.push({
+        id: profile.id,
+        username: profile.username,
+        iconURL: profile.iconURL,
+        title: profile.pin[i].title,
+        url: profile.pin[i].url,
+        i: i
+      });
+    }
+    
+    res.render("pin",{
+      id: id,
+      user: req.user,
+      pins: list
+    });
+  });
+  
+  if(req.user&&req.user.id==id){
+  }
+})
+
+app.get('/delete',function(req,res){
+  var id=querystring.parse(url.parse(req.url).query).id;
+  var i=querystring.parse(url.parse(req.url).query).i;
+  if(!(req.user&&req.user.id&&req.user.id==id)){
+    res.redirect('/signin');
+    return;
+  }
+  db.collection(collectionName).find({id:id},function(err,data){
+    if(err){
+      throw err;
+    }
+    if(data.length==0){     //should not happen
+      res.redirect('/');
+      return;
+    }
+    
+    var profile=data[0];
+    profile.pin.splice(i,1);
+    db.collection(collectionName).update({id:id},profile);
+    res.redirect('/pin?id='+id);
+    return;
+  });
 });
 
 app.listen(port,function(){

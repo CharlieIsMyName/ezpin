@@ -1,15 +1,18 @@
 div(class="row headerBar")
  div(class="col-md-2 col-md-offset-5 text-center")
-   a(href="/" class="title") EZ Poll
+   a(href="/" class="title") EZ Pin
  a(href="#{user?'#':'/signin'}" onclick="#{user?'toggleList()':''}" class="subtitle")  
-    div(class="btn signin-btn col-md-offset-2 col-md-1 text-center")
-        p #{user?user.username:"Sign In"}
- a(href="/signup" class="subtitle")  
-    div(class="btn signin-btn small-offset col-md-1 text-center")
-        p Sign Up
+    div(class="btn signin-btn col-md-offset-3 col-md-1 text-center") !{user?"<img align=middle width=30px src="+user.iconURL+">":"Sign In"}
 div
     div(id="userList" class="dropdown")
+        a(href="/newpin" class="dropdownLink")
+            div(class="dropdownElement")
+                p New Pin
+        a(href="#{'/pin?id='+(user&&user.id?user.id:null)}" class="dropdownLink")
+            div(class="dropdownElement")
+                p My Pins
         a(href="/signout" class="dropdownLink")
             div(class="dropdownElement")
                 p Log Out
+        
         

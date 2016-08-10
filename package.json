@@ -7,11 +7,13 @@
   "author": "Chenyu Wang <charliewangchenyu@gmail.com>",
   "dependencies": {
     "body-parser": "^1.15.2",
-    "client-sessions": "^0.7.0",
     "express": "~3.2.4",
+    "express-session": "^1.14.0",
+    "image-type": "^2.1.0",
     "jade": "^1.11.0",
     "mongodb": "^2.2.2",
     "monk": "^3.0.7",
-    "yelp": "^1.0.1"
+    "passport": "^0.3.2",
+    "passport-twitter": "^1.0.4"
   }
 }
