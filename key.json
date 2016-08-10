@@ -3,7 +3,7 @@
     "twitterKey": {
       "consumerKey": "EHgJ3y0bAwdEBuA8MwduVd3yk",
       "consumerSecret": "ofGMylUy6n6O8DXLmciaoYRvE1Vgq13jOLlwx7TzfAkUCMZx6z",
-      "callbackURL": "https://ezpin-charlieismyname.c9users.io/signin/callback"
+      "callbackURL": "https://ezpin.herokuapp.com/signin/callback"
     },
     "dburl": "mongodb://charlie1996:13243546@ds017514.mlab.com:17514/charliedb",
     "sessionSecret": "asd.fkjhasdflkjh"
