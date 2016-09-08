@@ -16,7 +16,7 @@ The app must contain a key.json file, which have the twitter app key information
     "dburl": "d",
     "sessionSecret": "e"
 }
-'''
+```
 
 the callbackURL must match the one you registered with.
 
